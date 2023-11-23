@@ -1,53 +1,25 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+
+using Application.Configuration;
+using Infrastructure;
 using Presentation.Components;
-using Presentation.Components.Account;
-using Infrastructure.Data;
+using Infrastructure.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-builder.Services.AddAuthentication()
-    .AddMicrosoftAccount(microsoftOptions =>
-    {
-        microsoftOptions.ClientId =
-            config["Authentication:Microsoft:ClientId"] ?? string.Empty; // 77a759c9-22d3-4620-8ced-ad92d9afe8e3
-        microsoftOptions.ClientSecret =
-            config["Authentication:Microsoft:ClientSecret"] ?? string.Empty; // UHk8Q~WUD4iOZ1_w-3por5yR8VbN6m.tjdgAMcFa
-    })
-    .AddIdentityCookies();
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(config);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<JobDbContext>(options =>
-    options.UseSqlite(connectionString, b => b.MigrationsAssembly("Presentation")));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<JobDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
-
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-
-
-
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseMigrationsEndPoint();
+    await app.InitializeDatabaseAsync();
 }
 else
 {
@@ -57,14 +29,9 @@ else
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
-
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
-// Add additional endpoints required by the Identity /Account Razor components.
-app.MapAdditionalIdentityEndpoints();
 
 app.Run();

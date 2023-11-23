@@ -1,13 +1,15 @@
-﻿@page "/weather"
+﻿@page "/monitoring"
 @attribute [StreamRendering]
 
 <PageTitle>Monitoring</PageTitle>
 
-@if (jobs == null)
+@if (_jobs == null)
 {
-    <p>
-        <em>Loading...</em>
-    </p>
+    <div class="row justify-content-center p-5">
+       <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+         <span class="visually-hidden">Loading...</span>
+       </div>
+    </div>
 }
 else
 {
@@ -27,18 +29,18 @@ else
         </tr>
         </thead>
         <tbody>
-        @foreach (var job in jobs)
+        @foreach (var job in _jobs)
         {
             <tr>
                 <td>@job.Id</td>
                 <td>@job.ProjectId</td>
                 <td>@job.Description</td>
-                <td>@secondsToDuration(job.Duration)</td>
+                <td>@SecondsToDuration(job.Duration)</td>
                 <td>@job.Owner</td>
-                <td>@getCostInUSD(job.Cost)</td>
+                <td>@CostToUsd(job.Cost)</td>
                 <td>Running</td>
                 <td>@job.Type</td>
-                <td><button class="btn btn-primary">Subscribe</button></td>
+                <td class="justify-content-center"><button class="btn btn-primary">Subscribe</button></td>
             </tr>
         }
         </tbody>
@@ -62,17 +64,18 @@ else
         </tr>
         </thead>
         <tbody>
-        @foreach (var job in jobs)
+        @foreach (var job in _jobs)
         {
             <tr>
                 <td>@job.Id</td>
                 <td>@job.ProjectId</td>
                 <td>@job.Description</td>
-                <td>@secondsToDuration(job.Duration)</td>
+                <td>@SecondsToDuration(job.Duration)</td>
                 <td>@job.Owner</td>
-                <td>@getCostInUSD(job.Cost)</td>
+                <td>@CostToUsd(job.Cost)</td>
                 <td>@job.Status</td>
-                <td>@job.Type</td> <td><button class="btn btn-primary">Recreate</button></td>
+                <td>@job.Type</td> 
+                <td><button class="btn btn-primary">Recreate</button></td>
             </tr>
         }
         </tbody>
@@ -82,7 +85,7 @@ else
 
 
 @code {
-    private JobItem[]? jobs;
+    private Job[]? _jobs;
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,7 +93,7 @@ else
         await Task.Delay(500);
 
         var types = new[] { "OpenSEES v3.5.0", "OpenSEES-SP v3.5.0", "OpenSEES-MP v3.5.0", "CSI-ETABS v20.2.0", "CSI-SAFE v20.2.0", "CSI-SAP v20.2.0"};
-        var statuses = new[] { "Running", "Terminated", "Failed", "Succeeded" };
+        var statuses = new[] { "Terminated", "Failed", "Succeeded", "Succeeded", "Succeeded", "Succeeded", "Succeeded" };
         var owners = new[] { "Alice", "Bob", "Charlie", "David", "Eve", "Jeff" };
         var descriptions = new[] {
             "this job requires a lot of memory", "this job requires a lot of CPU", "this job requires a lot of disk space",
@@ -99,7 +102,7 @@ else
             "this job requires a lot of skill", "this job requires a lot of knowledge", "this job requires a lot of wisdom",
             "this job requires a lot of strength", "this job requires a lot of courage", "this job requires a lot of faith"
         };
-        jobs = Enumerable.Range(1, 5).Select(index => new JobItem
+        _jobs = Enumerable.Range(1, 5).Select(index => new Job
         {
             Id = index,
             ProjectId = $"230{Random.Shared.Next(1,9)}{Random.Shared.Next(10, 30)}.{Random.Shared.Next(10, 30)}",
@@ -112,19 +115,19 @@ else
         }).ToArray();
     }
     
-    private string getCostInUSD(int cost)
+    private static string CostToUsd(int cost)
     {
         var usd = cost * 0.01;
         return $"${usd:0.00}";
     }
     
-    private string secondsToDuration(int seconds)
+    private static string SecondsToDuration(int seconds)
     {
         var time = TimeSpan.FromSeconds(seconds);
         return $"{time.Hours:00}:{time.Minutes:00}";
     }
 
-    private class JobItem
+    private class Job
     {
         public int Id { get; set; }
         public string? ProjectId { get; set; }

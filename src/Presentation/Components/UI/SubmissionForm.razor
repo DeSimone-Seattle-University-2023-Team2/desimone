@@ -1,31 +1,73 @@
-@using Application.Entities
 @inject NavigationManager Navigation
 
-<h3>SubmissionForm</h3>
-
 <div class="row">
-    <div class="col-md-4">
-        <EditForm Model="@Job" OnValidSubmit="@Submit" FormName="create-job-form">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <div class="form-group mb-3">
-                <label for="Maker" class="control-label">Name</label>
-                <InputText @bind-Value="Job!.Name" class="form-control" id="Name"/>
-            </div>
-            <div class="form-group mb-3">
-                <input type="submit" value="Create" class="btn btn-primary"/>
-            </div>
-        </EditForm>
-    </div>
+    <EditForm Model="@JobModel" OnValidSubmit="@Submit" FormName="job-submission-form">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+        <h4>Job Detail</h4>
+        <hr/>
+        <div class="form-group mb-3">
+            <label for="Name" class="control-label">Project #</label>
+            <InputText @bind-Value="JobModel!.ProjectId" class="form-control" id="Name"/>
+        </div>
+        <div class="form-group mb-3">
+            <label for="Name" class="control-label">Input file</label>
+            <InputText @bind-Value="JobModel!.InputFile" class="form-control" id="input-supp-dir"/>
+        </div>
+        <div class="form-group mb-3">
+            <label for="Name" class="control-label">Input supplement directory</label>
+            <InputText @bind-Value="JobModel!.InputSupplementDir" class="form-control" id="input-supplement-dir"/>
+        </div>
+        <div class="form-group mb-3">
+            <label for="Name" class="control-label">Runtime configuration file</label>
+            <InputText @bind-Value="JobModel!.RuntimeConfigFile" class="form-control" id="runtime-config-file"/>
+        </div>
+        <div class="form-group mb-3">
+            <label for="Name" class="control-label">Output directory</label>
+            <InputText @bind-Value="JobModel!.OutputDir" class="form-control" id="output-dir"/>
+        </div>
+
+        <h4>Compute Resource</h4>
+        <hr/>
+        <div class="form-group mb-3">
+            <label for="Maker" class="control-label">Type</label>
+            <InputText @bind-Value="JobModel!.Type" class="form-control" id="job-type"/>
+        </div>
+        <div class="form-group mb-3">
+            <label for="Maker" class="control-label">Speed</label>
+            <InputText @bind-Value="JobModel!.Speed" class="form-control" id="speed"/>
+        </div>
+    </EditForm>
 </div>
 
 @code {
+
     [SupplyParameterFromForm]
-    public Job? Job { get; set; }
-    protected override void OnInitialized() => Job ??= new();
-    
+    public Job? JobModel { get; set; }
+
+    protected override void OnInitialized() => JobModel ??= new();
+
     private void Submit()
     {
         Navigation.NavigateTo("monitoring", true);
     }
+    
+    public class Job
+    {
+        public int? Id { get; set; }
+        public string? ProjectId { get; set; }
+        public string? Description { get; set; }
+        public int? Duration { get; set; }
+        public string? Owner { get; set; }
+        public int? Cost { get; set; }
+        public string? Status { get; set; }
+        public string? Type { get; set; }
+        public string? Speed { get; set; }
+        public string? OutputDir { get; set; }
+        public string? InputSupplementDir { get; set; } 
+        public string? RuntimeConfigFile { get; set; }
+        public string? InputFile { get; set; }
+        
+    }
+
 }

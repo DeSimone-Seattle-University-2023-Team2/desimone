@@ -1,52 +1,58 @@
+using Application.Interfaces;
 using Infrastructure.Data;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastructure;
+namespace Infrastructure.Configuration;
 
 public static class DependencyInjection
 {
     private const string ConnectionString = "DefaultConnection";
 
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services,
+    public static void AddInfrastructureServices(this IServiceCollection services,
         IConfiguration configuration)
     {
+        var microsoftClientId = configuration["Authentication:Microsoft:ClientId"];
+        var microsoftClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
         var connectionString = configuration.GetConnectionString(ConnectionString);
+        
         if (string.IsNullOrEmpty(connectionString))
         {
-            throw new ArgumentNullException(connectionString, "Connection string '" + ConnectionString + " not found.");
+            throw new ArgumentNullException(connectionString,
+                $"Connection string '{ConnectionString}' not found.");
         }
-        
-        services.AddDbContext<JobDbContext>(options =>
-            options.UseSqlite(connectionString, b => b.MigrationsAssembly("Presentation")));
-        services.AddDatabaseDeveloperPageExceptionFilter();
 
+        if (string.IsNullOrEmpty(microsoftClientId) || string.IsNullOrEmpty(microsoftClientSecret))
+        {
+            throw new ArgumentNullException(connectionString, 
+                "Microsoft Client credentials not found.");
+        }
 
-        services.AddDbContext<ApplicationDbContext>((sp, options) =>
+        services.AddDbContext<JobDbContext>((sp, options) =>
         {
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
-
             options.UseSqlite(connectionString);
         });
-
-        services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-
-        services.AddScoped<ApplicationDbContextInitialiser>();
-
+        
+        services.AddScoped<IJobDbContext>(provider => provider.GetRequiredService<JobDbContext>());
+        services.AddScoped<JobDbContextInitializer>();
+        
         services
             .AddDefaultIdentity<ApplicationUser>()
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<JobDbContext>();
 
+        services.AddCascadingAuthenticationState();
+        services.AddAuthentication()
+            .AddMicrosoftAccount(microsoftOptions =>
+            {
+                microsoftOptions.ClientId = microsoftClientId;
+                microsoftOptions.ClientSecret = microsoftClientSecret;
+            });
+
+        services.AddScoped<IJobDbContext>(provider => provider.GetRequiredService<JobDbContext>());
+  
         services.AddSingleton(TimeProvider.System);
-        services.AddTransient<IIdentityService, IdentityService>();
-
-        services.AddAuthorization(options =>
-            options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
-
-        return services;
     }
 }
