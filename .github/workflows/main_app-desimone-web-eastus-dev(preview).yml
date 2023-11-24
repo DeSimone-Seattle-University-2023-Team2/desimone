@@ -53,7 +53,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'app-desimone-web-eastus-dev(preview)'
+          app-name: 'app-desimone-web-eastus-dev/preview'
           slot-name: 'preview'
           package: .
           publish-profile: ${{ secrets.DESIMONE_PUBLISH_PREVIEW_SECRET }}
