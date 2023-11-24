@@ -18,38 +18,19 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: 8.0.x
+      - name: Install dependencies
+        run: dotnet restore ./src/Presentation
 
       - name: Build with dotnet
-        run: dotnet build ./src/Presentation --configuration Release
+        run: dotnet build ./src/Presentation --configuration Release --no-restore
 
       - name: dotnet publish
-        run: dotnet publish -c Release ./src/Presentation -o ${{env.DOTNET_ROOT}}/myapp
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: .net-app
+        run: dotnet publish ./src/Presentation --configuration Release --no-build -o ./publish
 
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: actions/upload-artifact@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          slot-name: 'production'
-          package: .
           publish-profile: ${{ secrets.DESIMONE_PUBLISH_SECRET }}
+          package: ./publish
