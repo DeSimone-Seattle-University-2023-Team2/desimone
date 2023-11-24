@@ -9,14 +9,16 @@ namespace Infrastructure.Configuration;
 
 public static class DependencyInjection
 {
-    private const string ConnectionString = "DefaultConnection";
+    private const string ConnectionString = "ConnectionStrings:DeSimone:SqlDb";
+    private const string MicrosoftClientId = "Authentication:Microsoft:ClientId";
+    private const string MicrosoftClientSecret = "Authentication:Microsoft:ClientSecret";
 
     public static void AddInfrastructureServices(this IServiceCollection services,
         IConfiguration configuration)
     {
-        var microsoftClientId = configuration["Authentication:Microsoft:ClientId"];
-        var microsoftClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
-        var connectionString = configuration.GetConnectionString(ConnectionString);
+        var microsoftClientId = configuration[MicrosoftClientId];
+        var microsoftClientSecret = configuration[MicrosoftClientSecret];
+        var connectionString = configuration[ConnectionString];
         
         if (string.IsNullOrEmpty(connectionString))
         {
@@ -26,14 +28,14 @@ public static class DependencyInjection
 
         if (string.IsNullOrEmpty(microsoftClientId) || string.IsNullOrEmpty(microsoftClientSecret))
         {
-            throw new ArgumentNullException(connectionString, 
+            throw new ArgumentNullException(microsoftClientSecret, 
                 "Microsoft Client credentials not found.");
         }
 
         services.AddDbContext<JobDbContext>((sp, options) =>
         {
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
-            options.UseSqlite(connectionString);
+            options.UseSqlServer(connectionString);
         });
         
         services.AddScoped<IJobDbContext>(provider => provider.GetRequiredService<JobDbContext>());
