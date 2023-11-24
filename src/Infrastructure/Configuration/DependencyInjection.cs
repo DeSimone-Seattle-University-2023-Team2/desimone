@@ -16,7 +16,7 @@ public static class DependencyInjection
     {
         var microsoftClientId = configuration["Authentication:Microsoft:ClientId"];
         var microsoftClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
-        var connectionString = configuration.GetConnectionString(ConnectionString);
+        var connectionString = configuration["ConnectionStrings:DeSimone:SqlDb"];
         
         if (string.IsNullOrEmpty(connectionString))
         {
@@ -33,7 +33,7 @@ public static class DependencyInjection
         services.AddDbContext<JobDbContext>((sp, options) =>
         {
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
-            options.UseSqlite(connectionString);
+            options.UseSqlServer(connectionString);
         });
         
         services.AddScoped<IJobDbContext>(provider => provider.GetRequiredService<JobDbContext>());
