@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     
 env:
-  AZURE_WEBAPP_NAME: "app-desimone-web-eastus-dev(preview)"
+  AZURE_WEBAPP_NAME: "app-desimone-web-eastus-dev-preview"
 
 jobs:
   build:
