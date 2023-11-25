@@ -1,0 +1,22 @@
+.nav-item {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.nav-item ::deep .nav-link {
+    color: var(--bs-gray-700);
+}
+
+.nav-item ::deep a.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+.nav-item ::deep a.active:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.nav-item ::deep .nav-link:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
