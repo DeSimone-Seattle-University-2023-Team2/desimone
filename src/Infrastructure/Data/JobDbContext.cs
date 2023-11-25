@@ -1,8 +1,9 @@
 using System.Reflection;
-using Application.Entities;
-using Application.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
+using Application.Entities;
+using Application.Interfaces;
 
 namespace Infrastructure.Data;
 
