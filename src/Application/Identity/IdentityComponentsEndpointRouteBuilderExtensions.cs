@@ -2,24 +2,30 @@ using System.Security.Claims;
 using System.Text.Json;
 using Application.Entities;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Presentation.Components.Account.Pages;
-using Presentation.Components.Account.Pages.Manage;
 
-namespace Presentation.Components.Account.Identity;
+namespace Application.Identity;
 
-internal static class IdentityComponentsEndpointRouteBuilderExtensions
+public static class IdentityComponentsEndpointRouteBuilderExtensions
 {
+    public const string LoginCallbackAction = "LoginCallback";
+    public const string LinkLoginCallbackAction = "LinkLoginCallback";
+    
     private static ChallengeHttpResult PerformExternalLoginHandler(
         HttpContext context, [FromServices] SignInManager<ApplicationUser> signInManager,
         [FromForm] string provider, [FromForm] string returnUrl)
     {
-        var query = new List<KeyValuePair<string, StringValues>>{ new("ReturnUrl", returnUrl), new("Action", ExternalLogin.LoginCallbackAction) };
+        var query = new List<KeyValuePair<string, StringValues>>{ new("ReturnUrl", returnUrl), new("Action", LoginCallbackAction) };
         
         var redirectUrl = UriHelper.BuildRelative(
             context.Request.PathBase,
@@ -40,7 +46,7 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
         var redirectUrl = UriHelper.BuildRelative(
             context.Request.PathBase,
             "/Account/Manage/ExternalLogins",
-            QueryString.Create("Action", ExternalLogins.LinkLoginCallbackAction));
+            QueryString.Create("Action", LinkLoginCallbackAction));
 
         var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl,
             signInManager.UserManager.GetUserId(context.User));

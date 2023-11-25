@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Presentation.Components;
 using Application.Configuration;
 using Application.Entities;
+using Application.Identity;
 using Infrastructure.Data;
-using Presentation.Components.Account.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -47,6 +47,6 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-IdentityComponentsEndpointRouteBuilderExtensions.MapAdditionalIdentityEndpoints(app);
+app.MapAdditionalIdentityEndpoints();
 
 app.Run();

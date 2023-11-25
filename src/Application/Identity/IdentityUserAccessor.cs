@@ -1,9 +1,10 @@
 using Application.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
-namespace Presentation.Components.Account.Identity;
+namespace Application.Identity;
 
-internal sealed class IdentityUserAccessor(UserManager<ApplicationUser> userManager,
+public sealed class IdentityUserAccessor(UserManager<ApplicationUser> userManager,
     IdentityRedirectManager redirectManager)
 {
     public async Task<ApplicationUser> GetRequiredUserAsync(HttpContext context)

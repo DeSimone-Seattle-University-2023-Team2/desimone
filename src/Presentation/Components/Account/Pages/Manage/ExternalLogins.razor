@@ -2,8 +2,8 @@
 
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
-@using Presentation.Components.Account.Identity
 @using Application.Entities
+@using Application.Identity
 
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
@@ -65,7 +65,6 @@
 }
 
 @code {
-    public const string LinkLoginCallbackAction = "LinkLoginCallback";
 
     private ApplicationUser user = default!;
     private IList<UserLoginInfo>? currentLogins;
@@ -100,7 +99,7 @@
 
         showRemoveButton = passwordHash is not null || currentLogins.Count > 1;
 
-        if (HttpMethods.IsGet(HttpContext.Request.Method) && Action == LinkLoginCallbackAction)
+        if (HttpMethods.IsGet(HttpContext.Request.Method) && Action == IdentityComponentsEndpointRouteBuilderExtensions.LinkLoginCallbackAction)
         {
             await OnGetLinkLoginCallbackAsync();
         }
