@@ -14,13 +14,29 @@
 <PageTitle>Log in</PageTitle>
 
 <h1>Log in</h1>
-<div class="row">
-    <div class="col-md-4">
+<div class="d-flex gap-5">
+    <div class="col-md-6">
+        <section>
+            <h4>Log in with Microsoft Identity</h4>
+            <hr/>
+            <ExternalLoginPicker/>
+        </section>
+        
+        <div class="alert alert-warning mt-lg-3" role="alert">
+            <b>DEV NOTE</b>
+            <hr/>
+            <p>Log in with personal Microsoft personal account. <br/> 
+                With Desimone Microsoft account, you might need to request approval from DCE</p>
+            <p>Log in with a temporary fake local account below</p>
+            <p><code>devteam@de-simone.com : Password123!</code></p>
+        </div>
+    </div>
+    <div>
         <section>
             <StatusMessage Message="@errorMessage"/>
             <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                 <DataAnnotationsValidator/>
-                <h2>Use a local account to log in.</h2>
+                <h4>Log in with local account.</h4>
                 <hr/>
                 <ValidationSummary class="text-danger" role="alert"/>
                 <div class="form-floating mb-3">
@@ -39,30 +55,17 @@
                         Remember me
                     </label>
                 </div>
-                <div>
+                <div class="d-flex justify-content-end mb-3">
                     <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                 </div>
-                <div>
-                    <p>
-                        <a href="Account/ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
+                <div class="d-flex flex-column gap-3 mb-3">
+                    <a href="Account/ForgotPassword">Forgot your password?</a>
+                    <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
                 </div>
             </EditForm>
         </section>
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr/>
-            <ExternalLoginPicker/>
-        </section>
-    </div>
+
 </div>
 
 @code {

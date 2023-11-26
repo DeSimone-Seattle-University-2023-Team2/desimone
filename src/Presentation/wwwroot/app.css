@@ -15,14 +15,24 @@
     --pattens-blue: #e5ecf0;
 
 }
+
+@font-face {
+    font-family: 'Trade Gothic Bold';
+    src: url('fonts/TradeGothicBold.ttf') format('ttf');
+}
+@font-face {
+    font-family: 'Trade Gothic Light';
+    src: url('fonts/TradeGothicLight.ttf') format('ttf');
+}
+
 html, body {
-    font-family: 'TradeGothic Light', 'Gothic A1', Helvetica, Arial, sans-serif;
+    font-family: 'Trade Gothic Light', Helvetica, Arial, sans-serif;
     font-weight: 300;
     margin: 0;
 }
 
 h1,h2,h3,h4,h5,h6 {
-    font-family: 'TradeGothic Bold', 'Gothic A1', Helvetica, Arial, sans-serif;
+    font-family: 'Trade Gothic Bold', Helvetica, Arial, sans-serif;
     font-weight: 700;
 }
 

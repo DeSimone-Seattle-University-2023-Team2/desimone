@@ -1,41 +1,44 @@
 ﻿@page "/submission"
 @using Presentation.Configuration
 @using Presentation.Components.UI
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @attribute [RenderModeInteractiveServer]
 
 <PageTitle>Submission</PageTitle>
-
-<div class="d-flex justify-content-between p-0">
-    <h3>Create Job</h3>
-    <button class="btn btn-primary mb-2" @onclick="IncrementCount">Submit</button>
-</div>
-<div class="row">
-    <div class="col-8 ps-0">
-        <div class="border border-2 p-3 h-100">
-            <SubmissionForm />
-        </div>
+<AuthorizeView>
+    <div class="d-flex justify-content-between p-0">
+        <h3>Create Job</h3>
+        <button class="btn btn-primary mb-2" @onclick="IncrementCount">Submit</button>
     </div>
-    <div class="col-4 pe-0">
-        <div class="border border-2 p-3 h-100">
-            <h4>Estimation</h4>
-            <hr/>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Cost</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Rate per hour: $@_currentCount</h6>
-                    <p class="card-text">Select compute resources to show estimated cost</p>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Duration</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                    <p class="card-text">Select compute resources to show estimated duration</p>
-                </div>
+    <div class="row">
+        <div class="col-8 ps-0">
+            <div class="border border-2 p-3 h-100">
+                <SubmissionForm />
             </div>
         </div>
+        <div class="col-4 pe-0">
+            <div class="border border-2 p-3 h-100">
+                <h4>Estimation</h4>
+                <hr/>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Cost</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Rate per hour: $@_currentCount</h6>
+                        <p class="card-text">Select compute resources to show estimated cost</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Duration</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                        <p class="card-text">Select compute resources to show estimated duration</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</AuthorizeView>
 
 @code {
     private int _currentCount;

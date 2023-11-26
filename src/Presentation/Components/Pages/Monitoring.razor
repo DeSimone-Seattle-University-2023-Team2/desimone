@@ -1,8 +1,9 @@
 ﻿@page "/monitoring"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @attribute [StreamRendering]
-
 <PageTitle>Monitoring</PageTitle>
-
+<AuthorizeView>
 @if (_jobs == null)
 {
     <div class="row justify-content-center p-5">
@@ -81,7 +82,7 @@ else
         </tbody>
     </table>
 }
-
+</AuthorizeView>
 
 
 @code {
