@@ -1,6 +1,6 @@
 namespace Application.Entities;
 
-public class Job
+public class Job : Entity
 {
     public int Id { get; set; }
     
