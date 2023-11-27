@@ -34,8 +34,14 @@
             <InputText @bind-Value="JobModel!.Type" class="form-control" id="job-type"/>
         </div>
         <div class="form-group mb-3">
-            <label for="Maker" class="control-label">Speed</label>
-            <InputText @bind-Value="JobModel!.Speed" class="form-control" id="speed"/>
+            <label for="speed" class="control-label">Speed</label>
+            <InputSelect @bind-Value="JobModel!.Speed" class="form-select" id="speed">
+                <option selected disabled>select speed level...</option>
+                        @foreach (var speed in Speeds)
+                {
+                <option value=@speed @onselect="() => JobModel.Speed = speed">@speed</option>
+                }
+            </InputSelect>
         </div>
     </EditForm>
 </div>
@@ -44,6 +50,8 @@
 
     [SupplyParameterFromForm]
     public Job? JobModel { get; set; }
+
+    public List<string> Speeds = new() { "Slow", "Medium", "Fast"};
 
     protected override void OnInitialized() => JobModel ??= new();
 
