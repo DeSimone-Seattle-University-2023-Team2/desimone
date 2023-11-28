@@ -1,0 +1,48 @@
+@using Application.Entities
+
+<table class="table table-bordered mb-5">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Project #</th>
+        <th>Name</th>
+        <th>Duration</th>
+        <th>Creator</th>
+        <th>Cost</th>
+        <th>Status</th>
+        <th>Type</th>
+        <th>Notification</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var job in Jobs!)
+    {
+        <tr>
+            <td>@job.Id</td>
+            <td>@job.Project?.Number</td>
+            <td>@job.Name</td>
+            <td>@SecondsToDuration(job.DurationSeconds ?? 0)</td>
+            <td>@job.Creator?.UserName</td>
+            <td>@CostToUsd(job.CostUsd ?? 0)</td>
+            <td>@job.Status?.Name</td>
+            <td>@job.Type?.Name</td>
+            <td class="justify-content-center">
+                <button class="btn btn-primary">
+                    @(job.Status?.Name == "Running" || job?.Status?.Name == "Pending" ? "Subscribe" : "Recreate")
+                </button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<Job>? Jobs { get; set; } = new();
+    private static string CostToUsd(int cost) => $"${cost*0.01:0.00}";
+    private static string SecondsToDuration(int seconds)
+    {
+        var time = TimeSpan.FromSeconds(seconds);
+        return $"{time.Hours:00}:{time.Minutes:00}";
+    }
+}
