@@ -12,7 +12,13 @@ public class JobDbContext : IdentityDbContext<ApplicationUser>, IJobDbContext
     public JobDbContext(DbContextOptions<JobDbContext> options) : base(options) { }
 
     public DbSet<Job> Jobs => Set<Job>();
-
+    public DbSet<CpuType> CpuTypes => Set<CpuType>();
+    public DbSet<JobSpeed> JobSpeeds => Set<JobSpeed>();
+    public DbSet<JobStatus> JobStatuses => Set<JobStatus>();
+    public DbSet<JobSubscription> JobSubscriptions => Set<JobSubscription>();
+    public DbSet<JobType> JobTypes => Set<JobType>();
+    public DbSet<MemoryType> MemoryTypes => Set<MemoryType>();
+    public DbSet<Project> Projects => Set<Project>();
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
