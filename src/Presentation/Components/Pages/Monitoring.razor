@@ -1,142 +1,40 @@
 ﻿@page "/monitoring"
 @using Microsoft.AspNetCore.Authorization
+@using Application.Entities
+@using Application.Services
+@using Presentation.Configuration
+@using Presentation.Components.UI
+
 @attribute [Authorize]
 @attribute [StreamRendering]
+@attribute [RenderModeInteractiveServer]
+
+@inject JobService JobService
+
 <PageTitle>Monitoring</PageTitle>
 <AuthorizeView>
-@if (_jobs == null)
-{
-    <div class="row justify-content-center p-5">
-       <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
-         <span class="visually-hidden">Loading...</span>
-       </div>
-    </div>
-}
-else
-{
-    <h2>Running Jobs</h2>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>ProjectId</th>
-            <th>Description</th>
-            <th>Duration</th>
-            <th>Owner</th>
-            <th>Cost</th>
-            <th>Status</th>
-            <th>Type</th>
-            <th>Notification</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var job in _jobs)
-        {
-            <tr>
-                <td>@job.Id</td>
-                <td>@job.ProjectId</td>
-                <td>@job.Description</td>
-                <td>@SecondsToDuration(job.Duration)</td>
-                <td>@job.Owner</td>
-                <td>@CostToUsd(job.Cost)</td>
-                <td>Running</td>
-                <td>@job.Type</td>
-                <td class="justify-content-center"><button class="btn btn-primary">Subscribe</button></td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    @if (_jobs == null)
+    {
+        <div class="row justify-content-center p-5">
+            <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h2>Running Jobs</h2>
+        <hr/>
+        <MonitoringTable Jobs="@(_jobs.Where(job => IsJobRunning(job.Status)).ToList())"/>
 
-    <br/>
-
-    <h2>Finished Jobs</h2>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>ProjectId</th>
-            <th>Description</th>
-            <th>Duration</th>
-            <th>Owner</th>
-            <th>Cost</th>
-            <th>Status</th>
-            <th>Type</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var job in _jobs)
-        {
-            <tr>
-                <td>@job.Id</td>
-                <td>@job.ProjectId</td>
-                <td>@job.Description</td>
-                <td>@SecondsToDuration(job.Duration)</td>
-                <td>@job.Owner</td>
-                <td>@CostToUsd(job.Cost)</td>
-                <td>@job.Status</td>
-                <td>@job.Type</td> 
-                <td><button class="btn btn-primary">Recreate</button></td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+        <h2>Finished Jobs</h2>
+        <hr/>
+        <MonitoringTable Jobs="@(_jobs.Where(job => !IsJobRunning(job.Status)).ToList())"/>
+    }
 </AuthorizeView>
 
-
 @code {
-    private Job[]? _jobs;
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
-
-        var types = new[] { "OpenSEES v3.5.0", "OpenSEES-SP v3.5.0", "OpenSEES-MP v3.5.0", "CSI-ETABS v20.2.0", "CSI-SAFE v20.2.0", "CSI-SAP v20.2.0"};
-        var statuses = new[] { "Terminated", "Failed", "Succeeded", "Succeeded", "Succeeded", "Succeeded", "Succeeded" };
-        var owners = new[] { "Alice", "Bob", "Charlie", "David", "Eve", "Jeff" };
-        var descriptions = new[] {
-            "this job requires a lot of memory", "this job requires a lot of CPU", "this job requires a lot of disk space",
-            "this job requires a lot of GPU", "this job requires a lot of network bandwidth", "this job requires a lot of time",
-            "this job requires a lot of money", "this job requires a lot of patience", "this job requires a lot of luck",
-            "this job requires a lot of skill", "this job requires a lot of knowledge", "this job requires a lot of wisdom",
-            "this job requires a lot of strength", "this job requires a lot of courage", "this job requires a lot of faith"
-        };
-        _jobs = Enumerable.Range(1, 5).Select(index => new Job
-        {
-            Id = index,
-            ProjectId = $"230{Random.Shared.Next(1,9)}{Random.Shared.Next(10, 30)}.{Random.Shared.Next(10, 30)}",
-            Description = descriptions[Random.Shared.Next(descriptions.Length)],
-            Duration = Random.Shared.Next(1, 60*60*24*7),
-            Owner = owners[Random.Shared.Next(types.Length)],
-            Cost = Random.Shared.Next(10, 5500),
-            Status = statuses[Random.Shared.Next(statuses.Length)],
-            Type = types[Random.Shared.Next(types.Length)]
-        }).ToArray();
-    }
-    
-    private static string CostToUsd(int cost)
-    {
-        var usd = cost * 0.01;
-        return $"${usd:0.00}";
-    }
-    
-    private static string SecondsToDuration(int seconds)
-    {
-        var time = TimeSpan.FromSeconds(seconds);
-        return $"{time.Hours:00}:{time.Minutes:00}";
-    }
-
-    private class Job
-    {
-        public int Id { get; set; }
-        public string? ProjectId { get; set; }
-        public string? Description { get; set; }
-        public int Duration { get; set; }
-        public string? Owner { get; set; }
-        public int Cost { get; set; }
-        public string? Status { get; set; }
-        public string? Type { get; set; }
-    }
+    private static List<Job>? _jobs;
+    protected override void OnInitialized() => _jobs = JobService.GetJobs();
+    private static bool IsJobRunning(JobStatus? status) => status?.Name is "Running" or "Pending";
 }

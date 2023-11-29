@@ -1,6 +1,7 @@
 using Application.Entities;
 using Application.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -41,6 +42,7 @@ public static class DependencyInjection
         
         services.AddScoped<IJobDbContext>(provider => provider.GetRequiredService<JobDbContext>());
         services.AddScoped<JobDbContextInitializer>();
+        services.AddTransient<IJobRepository, JobRepository>();
     }
     
     private static void AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
