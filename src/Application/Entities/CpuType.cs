@@ -12,5 +12,5 @@ public sealed class CpuType : Entity
     /** Denotes the number of vCPUs of the VM */
     public int? Value { get; set; }
     /** The list of job speeds that use this CPU type. */
-    List<JobSpeed>? JobSpeeds { get; set; }
+    public List<JobSpeed>? JobSpeeds { get; set; }
 }
