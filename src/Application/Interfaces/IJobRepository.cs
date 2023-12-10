@@ -4,8 +4,8 @@ namespace Application.Interfaces;
 
 public interface IJobRepository
 {
-    public List<Job> GetJobs();
-    public Job GetJobById(int id);
-    public void CreateOrUpdateJob(Job job);
-    public void DeleteJob(int id);
+    public Task<List<Job>> GetJobs();
+    public Task<Job> GetJobById(int id);
+    public Task CreateOrUpdateJob(Job job);
+    public Task DeleteJob(int id);
 }

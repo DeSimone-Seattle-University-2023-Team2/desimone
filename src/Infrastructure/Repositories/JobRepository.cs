@@ -7,30 +7,49 @@ namespace Infrastructure.Repositories;
 
 public class JobRepository(JobDbContext context) : IJobRepository
 {
-    public List<Job> GetJobs()
+    public Task<List<Job>> GetJobs()
     {
-        return context.Jobs
+        return Task.FromResult(context.Jobs
             .Include(job => job.Project)
             .Include(job => job.Creator)
             .Include(job => job.Status)
             .Include(job => job.Type)
             .Include(job => job.CpuType)
             .Include(job => job.MemoryType)
-            .ToList();
+            .ToList());
     }
 
-    public Job GetJobById(int id)
+    public Task<Job> GetJobById(int id)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(context.Jobs
+            .Include(job => job.Project)
+            .Include(job => job.Creator)
+            .Include(job => job.Status)
+            .Include(job => job.Type)
+            .Include(job => job.CpuType)
+            .Include(job => job.MemoryType)
+            .FirstOrDefault(job => job.Id == id) ?? throw new KeyNotFoundException($"Job with id [{id}] does not exist"));
     }
 
-    public void CreateOrUpdateJob(Job job)
+    public async Task CreateOrUpdateJob(Job job)
     {
-        throw new NotImplementedException();
+        if (!job.Id.HasValue)
+        {
+            await context.AddAsync(job);
+        }
+        else
+        {
+            context.Update(job);
+        }
+        
+        await context.SaveChangesAsync();
     }
 
-    public void DeleteJob(int id)
+    public async Task DeleteJob(int id)
     {
-        throw new NotImplementedException();
+        var job = await GetJobById(id);
+        
+        context.Remove(job);
+        await context.SaveChangesAsync();
     }
 }
