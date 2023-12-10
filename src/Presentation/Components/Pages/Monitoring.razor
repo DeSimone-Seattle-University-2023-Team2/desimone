@@ -35,6 +35,6 @@
 
 @code {
     private static List<Job>? _jobs;
-    protected override void OnInitialized() => _jobs = JobService.GetJobs();
+    protected override void OnInitialized() => _jobs = JobService.GetJobs().Result;
     private static bool IsJobRunning(JobStatus? status) => status?.Name is "Running" or "Pending";
 }
